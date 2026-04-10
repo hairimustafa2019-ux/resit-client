@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="Sistem Resit Hairi Mustafa & Associates">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="HMA Resit">
+    <title>Sistem Resit - Hairi Mustafa & Associates v4</title>
+
+    <!-- PWA Manifest inline -->
+    <link rel="icon" type="image/png" href="https://arleta.site/interactivelink/2510/logo.png">
+    <link rel="apple-touch-icon" href="https://arleta.site/interactivelink/2510/logo.png">
+
+    <!-- PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --secondary: #f1c40f;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --info: #3498db;
+            --warning: #f39c12;
+            --border: #dee2e6;
+            --text: #2d3748;
+            --text-muted: #718096;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --radius-sm: 6px;
+            --transition: all 0.25s ease;
+            --sidebar-width: 340px;
+        }
+
+        body.dark-mode {
+            --primary: #1a2a3a;
+            --primary-light: #243447;
+            --bg: #0f1117;
+            --card-bg: #1a1f2e;
+            --border: #2d3748;
+            --text: #e2e8f0;
+            --text-muted: #a0aec0;
+            --shadow: 0 2px 12px rgba(0,0,0,0.4);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode .form-section,
+        body.dark-mode .receipt-preview,
+        body.dark-mode .database-section,
+        body.dark-mode .stat-card,
+        body.dark-mode .modal-content,
+        body.dark-mode .cloud-modal {
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #243447;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        body.dark-mode .db-table th { background-color: #1a2a3a; }
+        body.dark-mode .db-table tbody tr:nth-child(even) { background-color: #1e2535; }
+        body.dark-mode .db-table tbody tr:hover { background-color: #243447; }
+        body.dark-mode .receipt-title { color: #000; }
+
+        /* ===== Reset ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* ===== Layout ===== */
+        .app-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Top Bar ===== */
+        .topbar {
+            background: var(--primary);
+            color: white;
+            padding: 0 20px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+        .topbar-logo {
+            height: 32px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+        .topbar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .topbar-subtitle {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            display: block;
+        }
+
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn.active {
+            background: var(--secondary);
+            color: #000;
+            border-color: var(--secondary);
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 0;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 56px);
+            position: sticky;
+            top: 56px;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark-mode .sidebar-section h2 { color: var(--text); }
+
+        /* ===== Form Styles ===== */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--info);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 55px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .receipt-no-field {
+            background: #f8fafc !important;
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--info) !important;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark-mode .receipt-no-field { background: #1a2a3a !important; }
+
+        /* ===== Buttons ===== */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-secondary { background: var(--secondary); color: #000; }
+        .btn-secondary:hover { background: #e6b800; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #229954; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #2980b9; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-muted { background: #95a5a6; color: white; }
+        .btn-muted:hover { background: #7f8c8d; }
+        .btn-purple { background: #9b59b6; color: white; }
+        .btn-purple:hover { background: #8e44ad; }
+
+        .btn-sm { padding: 6px 10px; font-size: 0.75rem; }
+        .btn-block { width: 100%; }
+
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+        .btn-group .btn { flex: 1; min-width: 0; }
+
+        /* ===== Receipt Preview Pane ===== */
+        .preview-pane {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ===== Stats Row ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 16px 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-card h4 { font-size: 0.75rem; opacity: 0.85; margin-bottom: 6px; }
+        .stat-card p { font-size: 1.3rem; font-weight: 700; }
+
+        /* ===== Receipt Card ===== */
+        .receipt-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px 30px;
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        body.dark-mode .receipt-card { background: #fff; color: #000; }
+
+        .receipt-header-block {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .logo-img { height: 65px; width: auto; flex-shrink: 0; }
+
+        .company-details h1 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: #000; }
+        .company-details p { font-size: 0.7rem; margin: 1px 0; line-height: 1.4; color: #000; }
+
+        .receipt-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            margin-bottom: 8px;
+            gap: 12px;
+            color: #000;
+        }
+
+        .receipt-meta > div { flex: 1; }
+        .receipt-meta strong { display: block; margin-bottom: 3px; }
+
+        .receipt-title-block {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: underline;
+            margin: 8px 0;
+            color: #000;
+        }
+
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 0.82rem;
+            color: #000;
+        }
+
+        .receipt-table thead { background-color: #2c3e50; color: white; }
+        .receipt-table th, .receipt-table td { padding: 8px 10px; border: 1px solid #000; text-align: left; }
+        .receipt-table tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+
+        .receipt-summary {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            font-weight: 600;
+            gap: 12px;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .receipt-summary-right { text-align: right; }
+        .receipt-summary-right p { margin: 3px 0; }
+        .receipt-summary-right p:last-child {
+            border-top: 1px solid #000;
+            padding-top: 4px;
+            margin-top: 6px;
+        }
+
+        .signature-area {
+            display: flex;
+            justify-content: flex-start;
+            margin: 20px 0 10px;
+            border-top: 1px solid #000;
+            padding-top: 15px;
+        }
+
+        .signature-box { text-align: center; width: 200px; }
+
+        .stamp-area {
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .stamp-img { max-height: 60px; width: auto; }
+        .sig-company-name { font-weight: 700; font-size: 0.8rem; margin-bottom: 2px; color: #000; }
+        .sig-company-title { font-size: 0.7rem; color: #555; }
+
+        .receipt-footer-block {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #888;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* ===== Database Section ===== */
+        .database-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .db-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .db-header h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin: 0; }
+        body.dark-mode .db-header h3 { color: var(--text); }
+
+        .db-filters {
+            padding: 12px 20px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input, .filter-select, .filter-date {
+            padding: 8px 11px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            background: var(--card-bg);
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .search-input { min-width: 200px; flex: 1; }
+        .filter-select { min-width: 130px; }
+        .filter-date { min-width: 130px; }
+
+        .search-input:focus, .filter-select:focus, .filter-date:focus {
+            outline: none;
+            border-color: var(--info);
+        }
+
+        .db-bulk-actions {
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .db-bulk-actions label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .table-wrapper { overflow-x: auto; }
+
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .db-table th {
+            background: var(--primary);
+            color: white;
+            padding: 11px 12px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .db-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .db-table tbody tr:hover { background: rgba(52,152,219,0.05); }
+        .db-table tbody tr.selected { background: rgba(52,152,219,0.1); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-cash { background: #d4edda; color: #155724; }
+        .badge-transfer { background: #cce5ff; color: #004085; }
+        .badge-cheque { background: #fff3cd; color: #856404; }
+
+        .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 500;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+
+        .modal-box {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 780px;
+            margin: auto;
+            animation: modalIn 0.25s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 2px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin: 0; }
+        body.dark-mode .modal-header h2 { color: var(--text); }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover { color: var(--danger); }
+
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+        /* ===== Print Preview ===== */
+        .preview-scroll {
+            background: #f0f2f5;
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        /* ===== Notification ===== */
+        .toast-container {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-hover);
+            animation: toastIn 0.3s ease;
+            pointer-events: all;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 320px;
+        }
+
+        @keyframes toastIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes toastOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--info); }
+        .toast.warning { background: var(--warning); }
+
+        /* ===== PWA Install Banner ===== */
+        .install-banner {
+            display: none;
+            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            color: white;
+            padding: 12px 20px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .install-banner.show { display: flex; }
+        .install-banner p { font-size: 0.85rem; margin: 0; }
+
+        /* ===== Cloud Sync Panel ===== */
+        .cloud-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .cloud-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--card-bg);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .cloud-option-btn:hover {
+            border-color: var(--info);
+            background: rgba(52,152,219,0.05);
+            transform: translateY(-2px);
+        }
+
+        .cloud-option-btn .cloud-icon { font-size: 2rem; }
+        .cloud-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 12px; line-height: 1.5; }
+
+        /* ===== Mobile Bottom Nav ===== */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            font-weight: 600;
+            gap: 3px;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-item.active { color: var(--info); }
+        .mobile-nav-item .nav-icon { font-size: 1.3rem; }
+
+        /* ===== Mobile View Modes ===== */
+        .mobile-view-form { display: none; }
+        .mobile-view-preview { display: none; }
+        .mobile-view-db { display: none; }
+
+        /* ===== Print ===== */
+        @media print {
+            .topbar, .sidebar, .stats-row, .database-section,
+            .mobile-nav, .install-banner, .toast-container,
+            .no-print { display: none !important; }
+
+            body { background: white; padding: 0; }
+
+            .preview-pane { padding: 0; }
+
+            .receipt-card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+
+            @page { size: A5; margin: 1cm; }
+        }
+
+        /* ===== Responsive Tablet ===== */
+        @media (max-width: 1024px) {
+            :root { --sidebar-width: 300px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 100%; }
+
+            .main-content { flex-direction: column; }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .preview-pane { padding: 12px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+            .receipt-card { padding: 18px; }
+            .topbar-title { font-size: 0.85rem; }
+            .topbar-subtitle { display: none; }
+
+            .mobile-nav { display: block; }
+            body { padding-bottom: 70px; }
+
+            /* Mobile single-view switching */
+            .main-content.mobile-show-form .sidebar { display: flex; }
+            .main-content.mobile-show-form .preview-pane .receipt-card { display: none; }
+            .main-content.mobile-show-form .preview-pane .database-section { display: none; }
+            .main-content.mobile-show-form .preview-pane .stats-row { display: none; }
+
+            .main-content.mobile-show-preview .sidebar { display: none; }
+            .main-content.mobile-show-preview .preview-pane .database-section { display: none; }
+
+            .main-content.mobile-show-db .sidebar { display: none; }
+            .main-content.mobile-show-db .preview-pane .receipt-card { display: none; }
+            .main-content.mobile-show-db .preview-pane .stats-row { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .stat-card p { font-size: 1rem; }
+            .db-table { font-size: 0.75rem; }
+            .action-btns { flex-direction: column; }
+            .topbar { padding: 0 12px; }
+            .topbar-right .icon-btn span { display: none; }
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        body.dark-mode ::-webkit-scrollbar-thumb { background: #444; }
+
+        /* ===== Loading Spinner ===== */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== Empty State ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* ===== Auto-save indicator ===== */
+        .autosave-badge {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 300;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .autosave-badge.show { opacity: 1; }
+
+        @media (max-width: 768px) {
+            .autosave-badge { bottom: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Install Banner -->
+<div class="install-banner" id="installBanner">
+    <p>📱 Install app HMA untuk akses offline yang lebih baik!</p>
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button class="btn btn-secondary btn-sm" onclick="installApp()">Install</button>
+        <button class="btn btn-muted btn-sm" onclick="dismissInstall()">Tutup</button>
+    </div>
+</div>
+
+<!-- Top Bar -->
+<div class="topbar no-print">
+    <div class="topbar-left">
+        <img src="https://arleta.site/interactivelink/2510/logo.png" alt="Logo" class="topbar-logo">
+        <div>
+            <span class="topbar-title">🧾 Sistem Resit HMA</span>
+            <span class="topbar-subtitle">Hairi Mustafa & Associates</span>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <button class="icon-btn" id="darkBtn" onclick="toggleDarkMode()">🌙 <span>Dark</span></button>
+        <button class="icon-btn" onclick="openModal('backupModal')">💾 <span>Backup</span></button>
+        <button class="icon-btn" onclick="document.getElementById('restoreFile').click()">📂 <span>Restore</span></button>
+        <button class="icon-btn" onclick="openModal('cloudModal')">☁️ <span>Cloud</span></button>
+        <input type="file" id="restoreFile" style="display:none;" accept=".json" onchange="restoreData(event)">
+    </div>
+</div>
+
+<!-- App Wrapper -->
+<div class="app-wrapper">
+    <div class="main-content mobile-show-form" id="mainContent">
+
+        <!-- Sidebar / Form -->
+        <div class="sidebar no-print">
+            <div class="sidebar-section">
+                <h2 id="formTitle">✏️ Jana Resit Baru</h2>
+                <form id="receiptForm" autocomplete="off">
+                    <input type="hidden" id="editIndex" value="-1">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tarikh</label>
+                            <input type="date" id="inTarikh" required>
+                        </div>
+                        <div class="form-group">
+                            <label>No. Resit</label>
+                            <input type="text" id="inReceiptNo" class="receipt-no-field" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="inKategori">
+                                <option value="DOKUMEN">DOKUMEN</option>
+                                <option value="LAWYER">LAWYER</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cara Bayaran</label>
+                            <select id="inPaymentMethod" onchange="updatePreview()">
+                                <option value="CASH">CASH</option>
+                                <option value="TRANSFER">TRANSFER</option>
+                                <option value="CHEQUE">CHEQUE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nama Pelanggan</label>
+                        <input type="text" id="inNama" placeholder="Nama penuh pelanggan..." required onkeyup="updatePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <textarea id="inAlamat" placeholder="Alamat pelanggan..." onkeyup="updatePreview()"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Perkara</label>
+                            <input type="text" id="inItem" value="Fee/Deposit" onkeyup="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Jumlah Bayaran (RM)</label>
+                            <input type="number" id="inJumlah" step="0.01" min="0" placeholder="0.00" required oninput="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Baki Terdahulu (RM)</label>
+                            <input type="number" id="inBakiTerdahulu" step="0.01" min="0" placeholder="0.00" required oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Butiran Kes</label>
+                            <input type="text" id="inButiran" placeholder="No. kes / rujukan..." onkeyup="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="simpanDanCetak()" id="btnSave">💾 Simpan & Cetak</button>
+                        <button type="button" class="btn btn-muted" onclick="resetBorang()">🔄 Reset</button>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-purple btn-block" onclick="openModal('previewModal')">👁️ Print Preview</button>
+                        <button type="button" class="btn btn-danger btn-block" onclick="exportToPDF()">📥 Export PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Preview Pane -->
+        <div class="preview-pane">
+
+            <!-- Stats Row -->
+            <div class="stats-row no-print">
+                <div class="stat-card">
+                    <h4>Total Resit</h4>
+                    <p id="statTotal">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Bayaran</h4>
+                    <p id="statAmount">RM 0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Baki</h4>
+                    <p id="statBalance">RM 0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Pelanggan</h4>
+                    <p id="statCustomers">0</p>
+                </div>
+            </div>
+
+            <!-- Receipt Card (Live Preview) -->
+            <div class="receipt-card" id="receiptArea">
+                <div class="receipt-header-block">
+                    <img src="https://arleta.site/interactivelink/2510/logo.png" alt="Logo" class="logo-img">
+                    <div class="company-details">
+                        <h1>TETUAN HAIRI MUSTAFA & ASSOCIATES</h1>
+                        <p>PEGUAM SYARIE * PESURUHJAYA SUMPAH</p>
+                        <p>LOT 02, BANGUNAN ARKED MARA, 09100 BALING, KEDAH</p>
+                        <p>TEL: 010-2434143 / 011-56531310 | EMAIL: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c040d051e05420d1f1f030f050d18091f2c0b010d0500420f0301">[email&#160;protected]</a></p>
+                    </div>
+                </div>
+
+                <div class="receipt-meta">
+                    <div>
+                        <strong>NO. RESIT: <span id="outReceiptNo">-</span></strong>
+                        <strong style="margin-top:8px;">PELANGGAN:</strong>
+                        <span id="outKategori" style="font-size:0.7rem;color:#555;"></span>
+                        <span id="outNama" style="font-weight:700;font-size:1.05rem;display:block;margin:4px 0;">-</span>
+                        <span id="outAlamat" style="font-size:0.78rem;white-space:pre-line;">-</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <strong>TARIKH:</strong> <span id="outTarikh">-</span><br>
+                        <strong style="display:block;margin-top:6px;">CARA BAYARAN:</strong>
+                        <span id="outPaymentMethod" style="font-weight:700;">-</span>
+                    </div>
+                </div>
+
+                <div class="receipt-title-block">RESIT</div>
+
+                <table class="receipt-table">
+                    <thead>
+                        <tr>
+                            <th>ITEM / PERKARA</th>
+                            <th style="text-align:right;">JUMLAH (RM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="outItem">-</td>
+                            <td id="outJumlahTable" style="text-align:right;">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="receipt-summary">
+                    <div>
+                        <p>BUTIRAN KES: <span id="outButiran" style="text-decoration:underline;">-</span></p>
+                    </div>
+                    <div class="receipt-summary-right">
+                        <p>JUMLAH BAYARAN: RM <span id="outJumlahSummary">0.00</span></p>
+                        <p>BAKI TERDAHULU: RM <span id="outBakiTerdahulu">0.00</span></p>
+                        <p>BAKI TERKINI: RM <span id="outBakiTerkini">0.00</span></p>
+                    </div>
+                </div>
+
+                <div class="signature-area">
+                    <div class="signature-box">
+                        <div class="stamp-area">
+                            <img src="https://arleta.site/interactivelink/2510/cop-bulat.png" alt="Cop Rasmi" class="stamp-img">
+                        </div>
+                        <div class="sig-company-name">HAIRI MUSTAFA & ASSOCIATES</div>
+                        <div class="sig-company-title">Peguam Syarie & Pesuruhjaya Sumpah</div>
+                    </div>
+                </div>
+
+                <div class="receipt-footer-block">
+                    Resit ini dijana oleh komputer. Terima kasih atas urusan anda.
+                </div>
+            </div>
+
+            <!-- Database Section -->
+            <div class="database-section no-print">
+                <div class="db-header">
+                    <h3>📋 Senarai Rekod Resit</h3>
+                    <span id="recordCount" style="font-size:0.8rem;color:var(--text-muted);">0 rekod</span>
+                </div>
+
+                <div class="db-filters">
+                    <input type="text" class="search-input" id="searchBar" placeholder="🔍 Cari nama pelanggan / no. resit..." oninput="paparRekod()">
+                    <select class="filter-select" id="filterPayment" onchange="paparRekod()">
+                        <option value="">Semua Cara Bayar</option>
+                        <option value="CASH">CASH</option>
+                        <option value="TRANSFER">TRANSFER</option>
+                        <option value="CHEQUE">CHEQUE</option>
+                    </select>
+                    <select class="filter-select" id="filterSort" onchange="paparRekod()">
+                        <option value="latest">Terbaru Dahulu</option>
+                        <option value="oldest">Tertua Dahulu</option>
+                        <option value="amount-desc">Jumlah (Tinggi → Rendah)</option>
+                        <option value="amount-asc">Jumlah (Rendah → Tinggi)</option>
+                        <option value="name-asc">Nama (A → Z)</option>
+                        <option value="name-desc">Nama (Z → A)</option>
+                    </select>
+                    <input type="date" class="filter-date" id="filterDateFrom" onchange="paparRekod()" title="Dari tarikh">
+                    <input type="date" class="filter-date" id="filterDateTo" onchange="paparRekod()" title="Hingga tarikh">
+                    <button class="btn btn-info btn-sm" onclick="resetFilters()">🔄 Reset</button>
+                </div>
+
+                <div class="db-bulk-actions">
+                    <label>
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        Pilih Semua
+                    </label>
+                    <button class="btn btn-danger btn-sm" onclick="bulkDelete()">🗑️ Padam Terpilih</button>
+                    <button class="btn btn-success btn-sm" onclick="exportToExcel()">📊 Export Excel/CSV</button>
+                    <button class="btn btn-info btn-sm" onclick="exportAllToPDF()">📄 Export Semua PDF</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="db-table">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;"><input type="checkbox" id="selectAllHeader" onchange="toggleSelectAll()"></th>
+                                <th>No. Resit</th>
+                                <th>Tarikh</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Cara Bayar</th>
+                                <th style="text-align:right;">Jumlah (RM)</th>
+                                <th style="text-align:right;">Baki (RM)</th>
+                                <th style="width:220px;">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- /preview-pane -->
+
+    </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-nav no-print">
+    <div class="mobile-nav-items">
+        <button class="mobile-nav-item active" id="navForm" onclick="switchMobileView('form')">
+            <span class="nav-icon">✏️</span>
+            <span>Borang</span>
+        </button>
+        <button class="mobile-nav-item" id="navPreview" onclick="switchMobileView('preview')">
+            <span class="nav-icon">👁️</span>
+            <span>Preview</span>
+        </button>
+        <button class="mobile-nav-item" id="navDB" onclick="switchMobileView('db')">
+            <span class="nav-icon">📋</span>
+            <span>Rekod</span>
+        </button>
+        <button class="mobile-nav-item" id="navMore" onclick="openModal('backupModal')">
+            <span class="nav-icon">⚙️</span>
+            <span>Lagi</span>
+        </button>
+    </div>
+</div>
+
+<!-- Auto-save badge -->
+<div class="autosave-badge" id="autosaveBadge">✅ Auto-saved</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Print Preview Modal -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>👁️ Print Preview</h2>
+            <button class="modal-close" onclick="closeModal('previewModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="preview-scroll" id="previewArea"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="printFromModal()">🖨️ PRINT</button>
+            <button class="btn btn-danger" onclick="exportFromModal()">📥 Export PDF</button>
+            <button class="btn btn-muted" onclick="closeModal('previewModal')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div class="modal-overlay" id="backupModal">
+    <div class="modal-box" style="max-width:480px;">
+        <div class="modal-header">
+            <h2>💾 Backup & Restore Data</h2>
+            <button class="modal-close" onclick="closeModal('backupModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:15px;color:var(--text-muted);font-size:0.9rem;">
+                Export semua data resit ke fail JSON untuk simpanan selamat, atau import semula dari backup.
+            </p>
+            <div class="btn-group">
+                <button class="btn btn-success btn-block" onclick="downloadBackup()">💾 Download Backup JSON</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-info btn-block" onclick="document.getElementById('restoreFile').click()">📂 Restore dari JSON</button>
+            </div>
+            <div style="margin-top:15px;padding:12px;background:rgba(231,76,60,0.1);border-radius:var(--radius-sm);border-left:3px solid var(--danger);">
+                <p style="font-size:0.8rem;color:var(--danger);font-weight:600;">⚠️ Restore akan menggantikan SEMUA data sedia ada!</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-muted" onclick="closeModal('backupModal')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+<div class="modal-overlay" id="cloudModal">
+    <div class="modal-box" style="max-width:520px;">
+        <div class="modal-header">
+            <h2>☁️ Cloud Sync</h2>
+            <button class="modal-close" onclick="closeModal('cloudModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">
+                Sync data resit anda ke cloud storage. Pilih platform:
+            </p>
+            <div class="cloud-options">
+                <button class="cloud-option-btn" onclick="syncToGoogleDrive()">
+                    <span class="cloud-icon">🔵</span>
+                    <span>Google Drive</span>
+                    <small style="color:var(--text-muted);font-weight:400;">Download & upload manual</small>
+                </button>
+                <button class="cloud-option-btn" onclick="syncToOneDrive()">
+                    <span class="cloud-icon">🔷</span>
+                    <span>OneDrive</span>
+                    <small style="color:var(--text-muted);font-weight:400;">Download & upload manual</small>
+                </button>
+                <button class="cloud-option-btn" onclick="syncToDropbox()">
+                    <span class="cloud-icon">📦</span>
+                    <span>Dropbox</span>
+                    <small style="color:var(--text-muted);font-weight:400;">Download & upload manual</small>
+                </button>
+                <button class="cloud-option-btn" onclick="exportToEmail()">
+                    <span class="cloud-icon">📧</span>
+                    <span>Email Backup</span>
+                    <small style="color:var(--text-muted);font-weight:400;">Hantar via email</small>
+                </button>
+            </div>
+            <p class="cloud-note">
+                💡 <strong>Cara guna:</strong> Klik platform pilihan untuk download fail backup JSON, kemudian upload ke folder cloud anda. Untuk restore, download semula fail dari cloud dan gunakan butang "Restore".
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-muted" onclick="closeModal('cloudModal')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ============================================================
+// CONSTANTS & STATE
+// ============================================================
+const STORAGE_KEY = 'hma_receipts_v4';
+const DARK_KEY = 'hma_dark_mode';
+const DRAFT_KEY = 'hma_form_draft';
+const RECEIPT_NUM_KEY = 'hma_last_receipt';
+const FMT = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+
+let records = [];
+let lastReceiptNum = 0;
+let autoSaveTimer = null;
+let deferredPrompt = null;
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    initDarkMode();
+    setToday();
+    generateReceiptNo();
+    loadFormDraft();
+    paparRekod();
+    updateStats();
+    enableAutoSave();
+    updatePreview();
+});
+
+function loadData() {
+    try {
+        records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        lastReceiptNum = parseInt(localStorage.getItem(RECEIPT_NUM_KEY) || '0');
+    } catch(e) {
+        records = [];
+        lastReceiptNum = 0;
+    }
+}
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+// ============================================================
+// DARK MODE
+// ============================================================
+function initDarkMode() {
+    if (localStorage.getItem(DARK_KEY) === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkBtn').classList.add('active');
+        document.getElementById('darkBtn').textContent = '☀️ Light';
+    }
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const dark = document.body.classList.contains('dark-mode');
+    localStorage.setItem(DARK_KEY, dark);
+    const btn = document.getElementById('darkBtn');
+    if (dark) {
+        btn.innerHTML = '☀️ <span>Light</span>';
+        btn.classList.add('active');
+    } else {
+        btn.innerHTML = '🌙 <span>Dark</span>';
+        btn.classList.remove('active');
+    }
+    toast(dark ? 'Dark Mode Aktif 🌙' : 'Light Mode Aktif ☀️', 'info');
+}
+
+// ============================================================
+// RECEIPT NUMBER
+// ============================================================
+function generateReceiptNo() {
+    lastReceiptNum++;
+    const year = new Date().getFullYear();
+    const no = `HMA-${year}-${String(lastReceiptNum).padStart(4, '0')}`;
+    localStorage.setItem(RECEIPT_NUM_KEY, lastReceiptNum);
+    document.getElementById('inReceiptNo').value = no;
+    return no;
+}
+
+function setToday() {
+    document.getElementById('inTarikh').valueAsDate = new Date();
+}
+
+function fmt(n) { return new Intl.NumberFormat('en-MY', FMT).format(n); }
+
+function fmtDate(str) {
+    if (!str) return '-';
+    const d = new Date(str + 'T00:00:00');
+    return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
+}
+
+// ============================================================
+// AUTO-SAVE
+// ============================================================
+function enableAutoSave() {
+    document.getElementById('receiptForm').addEventListener('input', () => {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+            saveFormDraft();
+            showAutosaveBadge();
+        }, 800);
+    });
+}
+
+function saveFormDraft() {
+    const draft = {
+        tarikh: get('inTarikh'),
+        kategori: get('inKategori'),
+        nama: get('inNama'),
+        alamat: get('inAlamat'),
+        item: get('inItem'),
+        jumlah: get('inJumlah'),
+        bakiTerdahulu: get('inBakiTerdahulu'),
+        paymentMethod: get('inPaymentMethod'),
+        butiran: get('inButiran'),
+        ts: new Date().toISOString()
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+}
+
+function loadFormDraft() {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY));
+    if (!d) return;
+    const editIdx = get('editIndex');
+    if (editIdx && editIdx !== '-1') return; // don't load draft if editing
+    set('inTarikh', d.tarikh);
+    set('inKategori', d.kategori);
+    set('inNama', d.nama);
+    set('inAlamat', d.alamat);
+    set('inItem', d.item);
+    set('inJumlah', d.jumlah);
+    set('inBakiTerdahulu', d.bakiTerdahulu);
+    set('inPaymentMethod', d.paymentMethod);
+    set('inButiran', d.butiran);
+}
+
+function showAutosaveBadge() {
+    const b = document.getElementById('autosaveBadge');
+    b.classList.add('show');
+    setTimeout(() => b.classList.remove('show'), 2000);
+}
+
+// ============================================================
+// LIVE PREVIEW UPDATE
+// ============================================================
+function updatePreview() {
+    const receiptNo = get('inReceiptNo') || '-';
+    const tarikh = get('inTarikh');
+    const kategori = get('inKategori');
+    const nama = get('inNama') || '-';
+    const alamat = get('inAlamat') || '-';
+    const item = get('inItem') || '-';
+    const jumlah = parseFloat(get('inJumlah')) || 0;
+    const bakiTerdahulu = parseFloat(get('inBakiTerdahulu')) || 0;
+    const paymentMethod = get('inPaymentMethod') || '-';
+    const butiran = get('inButiran') || '-';
+    const bakiTerkini = bakiTerdahulu - jumlah;
+
+    el('outReceiptNo').textContent = receiptNo;
+    el('outTarikh').textContent = tarikh ? fmtDate(tarikh) : '-';
+    el('outKategori').textContent = kategori;
+    el('outNama').textContent = nama;
+    el('outAlamat').textContent = alamat;
+    el('outItem').textContent = item;
+    el('outJumlahTable').textContent = fmt(jumlah);
+    el('outJumlahSummary').textContent = fmt(jumlah);
+    el('outBakiTerdahulu').textContent = fmt(bakiTerdahulu);
+    el('outBakiTerkini').textContent = fmt(bakiTerkini);
+    el('outPaymentMethod').textContent = paymentMethod;
+    el('outButiran').textContent = butiran;
+}
+
+// ============================================================
+// SAVE & PRINT
+// ============================================================
+function simpanDanCetak() {
+    if (!validateForm()) return;
+
+    const jumlah = parseFloat(get('inJumlah')) || 0;
+    const bakiTerdahulu = parseFloat(get('inBakiTerdahulu')) || 0;
+
+    const record = {
+        receiptNo: get('inReceiptNo'),
+        tarikh: get('inTarikh'),
+        kategori: get('inKategori'),
+        nama: get('inNama').trim(),
+        alamat: get('inAlamat').trim(),
+        item: get('inItem').trim(),
+        jumlah: jumlah,
+        bakiTerdahulu: bakiTerdahulu,
+        bakiTerkini: bakiTerdahulu - jumlah,
+        paymentMethod: get('inPaymentMethod'),
+        butiran: get('inButiran').trim(),
+        savedAt: new Date().toISOString()
+    };
+
+    const editIdx = parseInt(get('editIndex'));
+
+    if (editIdx >= 0) {
+        records[editIdx] = record;
+        toast('Rekod berjaya dikemaskini! ✏️', 'success');
+    } else {
+        records.unshift(record);
+        toast('Resit berjaya disimpan! 💾', 'success');
+    }
+
+    saveData();
+    updatePreview();
+    paparRekod();
+    updateStats();
+    localStorage.removeItem(DRAFT_KEY);
+
+    // Print using inline-styled receipt
+    const printData = {
+        receiptNo: record.receiptNo,
+        tarikh: fmtDate(record.tarikh),
+        kategori: record.kategori,
+        nama: record.nama,
+        alamat: record.alamat,
+        item: record.item,
+        jumlah: record.jumlah,
+        bakiTerdahulu: record.bakiTerdahulu,
+        bakiTerkini: record.bakiTerkini,
+        paymentMethod: record.paymentMethod,
+        butiran: record.butiran
+    };
+    setTimeout(() => printReceipt(printData), 300);
+
+    resetBorang();
+}
+
+function validateForm() {
+    const nama = get('inNama').trim();
+    const jumlah = get('inJumlah');
+    const bakiTerdahulu = get('inBakiTerdahulu');
+
+    if (!nama) { toast('Sila masukkan nama pelanggan!', 'error'); return false; }
+    if (!jumlah) { toast('Sila masukkan jumlah bayaran!', 'error'); return false; }
+    if (!bakiTerdahulu && bakiTerdahulu !== '0') { toast('Sila masukkan baki terdahulu!', 'error'); return false; }
+    return true;
+}
+
+function resetBorang() {
+    document.getElementById('editIndex').value = '-1';
+    document.getElementById('formTitle').textContent = '✏️ Jana Resit Baru';
+    document.getElementById('btnSave').textContent = '💾 Simpan & Cetak';
+    setToday();
+    generateReceiptNo();
+    set('inKategori', 'DOKUMEN');
+    set('inPaymentMethod', 'CASH');
+    set('inNama', '');
+    set('inAlamat', '');
+    set('inItem', 'Fee/Deposit');
+    set('inJumlah', '');
+    set('inBakiTerdahulu', '');
+    set('inButiran', '');
+    updatePreview();
+    localStorage.removeItem(DRAFT_KEY);
+}
+
+// ============================================================
+// RECEIPT HTML BUILDER — fully inline styles, no CSS variables
+// ============================================================
+function buildReceiptHTML(data) {
+    const {
+        receiptNo, tarikh, kategori, nama, alamat,
+        item, jumlah, bakiTerdahulu, bakiTerkini,
+        paymentMethod, butiran
+    } = data;
+
+    return `
+<div style="font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#000;width:148mm;min-height:200mm;padding:12mm 14mm;box-sizing:border-box;margin:0 auto;">
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px;gap:12px;">
+    <img src="https://arleta.site/interactivelink/2510/logo.png"
+         alt="Logo"
+         crossorigin="anonymous"
+         style="height:60px;width:auto;flex-shrink:0;"
+         onerror="this.style.display='none'">
+    <div>
+      <div style="font-size:11pt;font-weight:700;margin-bottom:3px;">TETUAN HAIRI MUSTAFA &amp; ASSOCIATES</div>
+      <div style="font-size:7.5pt;margin:1px 0;">PEGUAM SYARIE * PESURUHJAYA SUMPAH</div>
+      <div style="font-size:7.5pt;margin:1px 0;">LOT 02, BANGUNAN ARKED MARA, 09100 BALING, KEDAH</div>
+      <div style="font-size:7.5pt;margin:1px 0;">TEL: 010-2434143 / 011-56531310 | EMAIL: hairi.associates@gmail.com</div>
+    </div>
+  </div>
+
+  <!-- INFO ROW -->
+  <div style="display:flex;justify-content:space-between;font-size:8.5pt;margin-bottom:8px;gap:10px;">
+    <div style="flex:1;">
+      <div style="font-weight:700;margin-bottom:4px;">NO. RESIT: ${receiptNo || '-'}</div>
+      <div style="font-weight:700;margin-bottom:3px;">PELANGGAN:</div>
+      <div style="font-size:7pt;color:#555;">${kategori || ''}</div>
+      <div style="font-weight:700;font-size:11pt;margin:3px 0;">${nama || '-'}</div>
+      <div style="font-size:7.5pt;white-space:pre-line;">${(alamat || '-').replace(/\n/g,'<br>')}</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-weight:700;">TARIKH:</div>
+      <div style="margin-bottom:6px;">${tarikh || '-'}</div>
+      <div style="font-weight:700;">CARA BAYARAN:</div>
+      <div style="font-weight:700;font-size:9.5pt;">${paymentMethod || '-'}</div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div style="text-align:center;font-size:15pt;font-weight:700;text-decoration:underline;margin:8px 0;">RESIT</div>
+
+  <!-- TABLE -->
+  <table style="width:100%;border-collapse:collapse;font-size:8.5pt;margin-bottom:10px;">
+    <thead>
+      <tr style="background:#2c3e50;color:#fff;">
+        <th style="padding:7px 9px;border:1px solid #000;text-align:left;font-weight:600;">ITEM / PERKARA</th>
+        <th style="padding:7px 9px;border:1px solid #000;text-align:right;font-weight:600;width:90px;">JUMLAH (RM)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f9f9f9;">
+        <td style="padding:7px 9px;border:1px solid #000;">${item || '-'}</td>
+        <td style="padding:7px 9px;border:1px solid #000;text-align:right;">${fmt(jumlah||0)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SUMMARY -->
+  <div style="display:flex;justify-content:space-between;font-size:8.5pt;font-weight:600;gap:10px;margin-bottom:15px;">
+    <div>
+      <div>BUTIRAN KES: <span style="text-decoration:underline;">${butiran || '-'}</span></div>
+    </div>
+    <div style="text-align:right;">
+      <div style="margin:2px 0;">JUMLAH BAYARAN: RM ${fmt(jumlah||0)}</div>
+      <div style="margin:2px 0;">BAKI TERDAHULU: RM ${fmt(bakiTerdahulu||0)}</div>
+      <div style="margin:2px 0;border-top:1px solid #000;padding-top:3px;margin-top:5px;">BAKI TERKINI: RM ${fmt(bakiTerkini||0)}</div>
+    </div>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div style="border-top:1px solid #000;padding-top:14px;margin-top:10px;">
+    <div style="text-align:center;width:190px;">
+      <div style="height:62px;display:flex;align-items:center;justify-content:center;margin-bottom:7px;">
+        <img src="https://arleta.site/interactivelink/2510/cop-bulat.png"
+             alt="Cop"
+             crossorigin="anonymous"
+             style="max-height:58px;width:auto;"
+             onerror="this.style.display='none'">
+      </div>
+      <div style="font-weight:700;font-size:8pt;">HAIRI MUSTAFA &amp; ASSOCIATES</div>
+      <div style="font-size:7pt;color:#555;">Peguam Syarie &amp; Pesuruhjaya Sumpah</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;font-size:6.5pt;color:#888;margin-top:14px;padding-top:7px;border-top:1px dashed #ccc;">
+    Resit ini dijana oleh komputer. Terima kasih atas urusan anda.
+  </div>
+
+</div>`;
+}
+
+// Get current form data as receipt data object
+function getCurrentReceiptData() {
+    const jumlah = parseFloat(get('inJumlah')) || 0;
+    const bakiTerdahulu = parseFloat(get('inBakiTerdahulu')) || 0;
+    return {
+        receiptNo: get('inReceiptNo') || '-',
+        tarikh: get('inTarikh') ? fmtDate(get('inTarikh')) : '-',
+        kategori: get('inKategori') || '',
+        nama: get('inNama') || '-',
+        alamat: get('inAlamat') || '-',
+        item: get('inItem') || '-',
+        jumlah: jumlah,
+        bakiTerdahulu: bakiTerdahulu,
+        bakiTerkini: bakiTerdahulu - jumlah,
+        paymentMethod: get('inPaymentMethod') || '-',
+        butiran: get('inButiran') || '-'
+    };
+}
+
+// ============================================================
+// PRINT RECEIPT — opens popup window, prints only receipt
+// ============================================================
+function printReceipt(data) {
+    const receiptHTML = buildReceiptHTML(data);
+    const fullHTML = `<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Resit - ${data.receiptNo || ''}</title>
+<style>
+  @page { size: A5 portrait; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; width: 148mm; }
+</style>
+</head>
+<body>
+${receiptHTML}
+<script>
+  // Wait for images then print
+  window.onload = function() {
+    var imgs = document.querySelectorAll('img');
+    var loaded = 0;
+    if (imgs.length === 0) { window.print(); window.close(); return; }
+    imgs.forEach(function(img) {
+      if (img.complete) { loaded++; if (loaded === imgs.length) { window.print(); window.close(); } }
+      else {
+        img.onload = img.onerror = function() {
+          loaded++;
+          if (loaded === imgs.length) { window.print(); window.close(); }
+        };
+      }
+    });
+  };
+<\/script>
+</body>
+</html>`;
+
+    const w = window.open('', '_blank', 'width=600,height=800,toolbar=0,scrollbars=0,status=0');
+    if (!w) {
+        toast('Popup disekat! Benarkan popup untuk browser ini.', 'error');
+        return;
+    }
+    w.document.open();
+    w.document.write(fullHTML);
+    w.document.close();
+}
+
+// ============================================================
+// EXPORT PDF
+// ============================================================
+function exportToPDF(idx) {
+    let data;
+    if (idx !== undefined) {
+        const r = records[idx];
+        if (!r) return;
+        data = {
+            receiptNo: r.receiptNo,
+            tarikh: fmtDate(r.tarikh),
+            kategori: r.kategori,
+            nama: r.nama,
+            alamat: r.alamat,
+            item: r.item,
+            jumlah: r.jumlah,
+            bakiTerdahulu: r.bakiTerdahulu,
+            bakiTerkini: r.bakiTerkini,
+            paymentMethod: r.paymentMethod,
+            butiran: r.butiran
+        };
+    } else {
+        data = getCurrentReceiptData();
+    }
+
+    const html = buildReceiptHTML(data);
+
+    // Must be visible on screen for html2pdf to render correctly
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;top:0;left:0;z-index:99999;background:#fff;';
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
+
+    const receiptEl = wrapper.firstElementChild;
+    const filename = `Resit-${(data.receiptNo||'').replace(/[^a-zA-Z0-9-]/g,'_')}-${(data.nama||'').substring(0,15).replace(/[^a-zA-Z0-9]/g,'_')}.pdf`;
+
+    const opt = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            letterRendering: true,
+            backgroundColor: '#ffffff',
+            logging: false
+        },
+        jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    };
+
+    toast('Menjana PDF...', 'info');
+    html2pdf().set(opt).from(receiptEl).save().then(() => {
+        document.body.removeChild(wrapper);
+        toast('PDF berjaya dieksport! 📥', 'success');
+        closeModal('previewModal');
+    }).catch(err => {
+        document.body.removeChild(wrapper);
+        toast('Gagal jana PDF: ' + err.message, 'error');
+    });
+}
+
+function exportAllToPDF() {
+    const selected = getSelectedIndices();
+    if (selected.length === 0) {
+        toast('Sila pilih rekod untuk export PDF!', 'warning');
+        return;
+    }
+    toast(`Mengeksport ${selected.length} PDF...`, 'info');
+    let i = 0;
+    function next() {
+        if (i >= selected.length) {
+            toast('Semua PDF berjaya dieksport!', 'success');
+            return;
+        }
+        exportToPDF(selected[i]);
+        i++;
+        setTimeout(next, 1800);
+    }
+    next();
+}
+
+// ============================================================
+// PRINT PREVIEW
+// ============================================================
+function openPreviewModal() {
+    const data = getCurrentReceiptData();
+    const html = buildReceiptHTML(data);
+    document.getElementById('previewArea').innerHTML = `
+        <div style="background:#e8e8e8;padding:20px;display:flex;justify-content:center;min-height:300px;">
+            ${html}
+        </div>`;
+    // Clear record index so Print/PDF uses form data
+    delete document.getElementById('previewArea').dataset.idx;
+    document.getElementById('previewModal').classList.add('active');
+}
+
+// Override the PREVIEW button
+document.addEventListener('DOMContentLoaded', () => {
+    const previewBtn = document.querySelector('[onclick="openModal(\'previewModal\')"]');
+    if (previewBtn) {
+        previewBtn.onclick = null;
+        previewBtn.addEventListener('click', openPreviewModal);
+    }
+});
+
+// ============================================================
+// LOAD RECORD INTO FORM (EDIT)
+// ============================================================
+function editRekod(idx) {
+    const r = records[idx];
+    if (!r) return;
+
+    document.getElementById('editIndex').value = idx;
+    document.getElementById('formTitle').textContent = '✏️ Kemaskini Resit';
+    document.getElementById('btnSave').textContent = '💾 Kemaskini & Cetak';
+
+    set('inTarikh', r.tarikh);
+    set('inReceiptNo', r.receiptNo);
+    set('inKategori', r.kategori);
+    set('inPaymentMethod', r.paymentMethod);
+    set('inNama', r.nama);
+    set('inAlamat', r.alamat);
+    set('inItem', r.item);
+    set('inJumlah', r.jumlah);
+    set('inBakiTerdahulu', r.bakiTerdahulu);
+    set('inButiran', r.butiran);
+
+    updatePreview();
+    toast('Rekod dimuatkan untuk edit ✏️', 'info');
+
+    if (window.innerWidth <= 768) switchMobileView('form');
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function loadRecordToPreview(r) {
+    el('outReceiptNo').textContent = r.receiptNo || '-';
+    el('outTarikh').textContent = fmtDate(r.tarikh);
+    el('outKategori').textContent = r.kategori || '';
+    el('outNama').textContent = r.nama || '-';
+    el('outAlamat').textContent = r.alamat || '-';
+    el('outItem').textContent = r.item || '-';
+    el('outJumlahTable').textContent = fmt(r.jumlah || 0);
+    el('outJumlahSummary').textContent = fmt(r.jumlah || 0);
+    el('outBakiTerdahulu').textContent = fmt(r.bakiTerdahulu || 0);
+    el('outBakiTerkini').textContent = fmt(r.bakiTerkini || 0);
+    el('outPaymentMethod').textContent = r.paymentMethod || '-';
+    el('outButiran').textContent = r.butiran || '-';
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+function hapusRekod(idx) {
+    if (!confirm(`Padam resit ${records[idx]?.receiptNo}?`)) return;
+    records.splice(idx, 1);
+    saveData();
+    paparRekod();
+    updateStats();
+    toast('Rekod berjaya dipadam 🗑️', 'success');
+}
+
+function bulkDelete() {
+    const selected = getSelectedIndices();
+    if (selected.length === 0) { toast('Tiada rekod dipilih!', 'warning'); return; }
+    if (!confirm(`Padam ${selected.length} rekod yang dipilih?`)) return;
+    // Delete in reverse order to preserve indices
+    selected.sort((a,b) => b-a).forEach(i => records.splice(i, 1));
+    saveData();
+    paparRekod();
+    updateStats();
+    toast(`${selected.length} rekod berjaya dipadam!`, 'success');
+}
+
+function getSelectedIndices() {
+    const checkboxes = document.querySelectorAll('.row-check:checked');
+    return Array.from(checkboxes).map(cb => parseInt(cb.dataset.idx));
+}
+
+// ============================================================
+// DUPLICATE
+// ============================================================
+function duplicateRekod(idx) {
+    const r = { ...records[idx] };
+    // Generate new receipt number for duplicate
+    lastReceiptNum++;
+    const year = new Date().getFullYear();
+    r.receiptNo = `HMA-${year}-${String(lastReceiptNum).padStart(4, '0')}`;
+    localStorage.setItem(RECEIPT_NUM_KEY, lastReceiptNum);
+    r.tarikh = new Date().toISOString().split('T')[0];
+    r.savedAt = new Date().toISOString();
+
+    set('inTarikh', r.tarikh);
+    set('inReceiptNo', r.receiptNo);
+    set('inKategori', r.kategori);
+    set('inPaymentMethod', r.paymentMethod);
+    set('inNama', r.nama);
+    set('inAlamat', r.alamat);
+    set('inItem', r.item);
+    set('inJumlah', r.jumlah);
+    set('inBakiTerdahulu', r.bakiTerdahulu);
+    set('inButiran', r.butiran);
+    document.getElementById('editIndex').value = '-1';
+    document.getElementById('formTitle').textContent = '✏️ Duplikasi Resit (Baru)';
+
+    updatePreview();
+    toast('Resit diduplikasi! Kemaskini dan simpan.', 'info');
+    if (window.innerWidth <= 768) switchMobileView('form');
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// PREVIEW RECORD
+// ============================================================
+function previewRekod(idx) {
+    const r = records[idx];
+    if (!r) return;
+
+    const data = {
+        receiptNo: r.receiptNo,
+        tarikh: fmtDate(r.tarikh),
+        kategori: r.kategori,
+        nama: r.nama,
+        alamat: r.alamat,
+        item: r.item,
+        jumlah: r.jumlah,
+        bakiTerdahulu: r.bakiTerdahulu,
+        bakiTerkini: r.bakiTerkini,
+        paymentMethod: r.paymentMethod,
+        butiran: r.butiran
+    };
+
+    const html = buildReceiptHTML(data);
+    document.getElementById('previewArea').innerHTML = `
+        <div style="background:#e8e8e8;padding:20px;display:flex;justify-content:center;min-height:300px;">
+            ${html}
+        </div>`;
+    document.getElementById('previewArea').dataset.idx = idx;
+    document.getElementById('previewModal').classList.add('active');
+}
+
+// ============================================================
+// DISPLAY RECORDS
+// ============================================================
+function paparRekod() {
+    const search = (get('searchBar') || '').toLowerCase();
+    const filterPayment = get('filterPayment') || '';
+    const sort = get('filterSort') || 'latest';
+    const from = get('filterDateFrom');
+    const to = get('filterDateTo');
+
+    let filtered = records.filter((r, i) => {
+        r._originalIdx = i; // store original index
+        const matchSearch = !search ||
+            (r.nama || '').toLowerCase().includes(search) ||
+            (r.receiptNo || '').toLowerCase().includes(search) ||
+            (r.butiran || '').toLowerCase().includes(search);
+        const matchPayment = !filterPayment || r.paymentMethod === filterPayment;
+        const matchFrom = !from || r.tarikh >= from;
+        const matchTo = !to || r.tarikh <= to;
+        return matchSearch && matchPayment && matchFrom && matchTo;
+    });
+
+    // Sort
+    filtered.sort((a, b) => {
+        if (sort === 'latest') return (b.tarikh || '').localeCompare(a.tarikh || '');
+        if (sort === 'oldest') return (a.tarikh || '').localeCompare(b.tarikh || '');
+        if (sort === 'amount-desc') return (b.jumlah || 0) - (a.jumlah || 0);
+        if (sort === 'amount-asc') return (a.jumlah || 0) - (b.jumlah || 0);
+        if (sort === 'name-asc') return (a.nama || '').localeCompare(b.nama || '');
+        if (sort === 'name-desc') return (b.nama || '').localeCompare(a.nama || '');
+        return 0;
+    });
+
+    const tbody = document.getElementById('recordTableBody');
+    document.getElementById('recordCount').textContent = `${filtered.length} rekod`;
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>Tiada rekod ditemui</p>
+            </div>
+        </td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map((r, displayIdx) => {
+        const origIdx = r._originalIdx;
+        const badgeClass = r.paymentMethod === 'CASH' ? 'badge-cash' :
+                           r.paymentMethod === 'TRANSFER' ? 'badge-transfer' : 'badge-cheque';
+        return `
+        <tr id="row-${origIdx}">
+            <td class="checkbox-cell">
+                <input type="checkbox" class="row-check" data-idx="${origIdx}">
+            </td>
+            <td><strong style="font-family:monospace;font-size:0.78rem;color:var(--info);">${r.receiptNo || '-'}</strong></td>
+            <td>${fmtDate(r.tarikh)}</td>
+            <td>
+                <div style="font-weight:600;">${r.nama || '-'}</div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">${r.butiran || ''}</div>
+            </td>
+            <td><span class="badge ${badgeClass}">${r.paymentMethod || '-'}</span></td>
+            <td style="text-align:right;font-weight:600;">RM ${fmt(r.jumlah || 0)}</td>
+            <td style="text-align:right;color:${(r.bakiTerkini || 0) > 0 ? 'var(--danger)' : 'var(--success)'};">
+                RM ${fmt(r.bakiTerkini || 0)}
+            </td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn btn-warning btn-sm" onclick="editRekod(${origIdx})" title="Edit">✏️</button>
+                    <button class="btn btn-purple btn-sm" onclick="previewRekod(${origIdx})" title="Preview">👁️</button>
+                    <button class="btn btn-danger btn-sm" onclick="exportToPDF(${origIdx})" title="PDF">📥</button>
+                    <button class="btn btn-info btn-sm" onclick="duplicateRekod(${origIdx})" title="Duplikat">📋</button>
+                    <button class="btn btn-danger btn-sm" onclick="hapusRekod(${origIdx})" title="Padam">🗑️</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ============================================================
+// SELECT ALL / FILTERS
+// ============================================================
+function toggleSelectAll() {
+    const checked = document.getElementById('selectAll').checked ||
+                    document.getElementById('selectAllHeader').checked;
+    document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
+    document.getElementById('selectAll').checked = checked;
+    document.getElementById('selectAllHeader').checked = checked;
+}
+
+function resetFilters() {
+    set('searchBar', '');
+    set('filterPayment', '');
+    set('filterSort', 'latest');
+    set('filterDateFrom', '');
+    set('filterDateTo', '');
+    paparRekod();
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+    const total = records.length;
+    const totalAmount = records.reduce((s, r) => s + (r.jumlah || 0), 0);
+    const totalBalance = records.reduce((s, r) => s + (r.bakiTerkini || 0), 0);
+    const uniqueCustomers = new Set(records.map(r => r.nama?.toLowerCase())).size;
+
+    el('statTotal').textContent = total;
+    el('statAmount').textContent = `RM ${fmt(totalAmount)}`;
+    el('statBalance').textContent = `RM ${fmt(totalBalance)}`;
+    el('statCustomers').textContent = uniqueCustomers;
+}
+
+// ============================================================
+// BACKUP & RESTORE
+// ============================================================
+function downloadBackup() {
+    const data = {
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        lastReceiptNum: lastReceiptNum,
+        records: records
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `HMA-Backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Backup berjaya didownload! 💾', 'success');
+    closeModal('backupModal');
+}
+
+function restoreData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!confirm(`Restore ${data.records?.length || 0} rekod? Data sedia ada akan digantikan.`)) return;
+
+            records = data.records || [];
+            lastReceiptNum = data.lastReceiptNum || records.length;
+            saveData();
+            localStorage.setItem(RECEIPT_NUM_KEY, lastReceiptNum);
+            paparRekod();
+            updateStats();
+            toast(`✅ ${records.length} rekod berjaya di-restore!`, 'success');
+        } catch(err) {
+            toast('Fail backup tidak sah!', 'error');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// ============================================================
+// EXPORT EXCEL/CSV
+// ============================================================
+function exportToExcel() {
+    const rows = [
+        ['No. Resit', 'Tarikh', 'Nama Pelanggan', 'Alamat', 'Perkara', 'Cara Bayaran', 'Jumlah (RM)', 'Baki Terdahulu (RM)', 'Baki Terkini (RM)', 'Butiran Kes']
+    ];
+    records.forEach(r => {
+        rows.push([
+            r.receiptNo, r.tarikh, r.nama, r.alamat, r.item,
+            r.paymentMethod, r.jumlah, r.bakiTerdahulu, r.bakiTerkini, r.butiran
+        ]);
+    });
+    const csv = rows.map(r => r.map(c => `"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `HMA-Rekod-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV berjaya dieksport! 📊', 'success');
+}
+
+// ============================================================
+// CLOUD SYNC (manual download-based)
+// ============================================================
+function syncToGoogleDrive() {
+    downloadBackup();
+    setTimeout(() => {
+        window.open('https://drive.google.com', '_blank');
+        toast('Fail didownload. Upload ke Google Drive anda.', 'info');
+    }, 1000);
+    closeModal('cloudModal');
+}
+
+function syncToOneDrive() {
+    downloadBackup();
+    setTimeout(() => {
+        window.open('https://onedrive.live.com', '_blank');
+        toast('Fail didownload. Upload ke OneDrive anda.', 'info');
+    }, 1000);
+    closeModal('cloudModal');
+}
+
+function syncToDropbox() {
+    downloadBackup();
+    setTimeout(() => {
+        window.open('https://www.dropbox.com', '_blank');
+        toast('Fail didownload. Upload ke Dropbox anda.', 'info');
+    }, 1000);
+    closeModal('cloudModal');
+}
+
+function exportToEmail() {
+    const data = {
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        lastReceiptNum: lastReceiptNum,
+        records: records
+    };
+    const body = encodeURIComponent(`Backup Data HMA Sistem Resit\nTarikh: ${new Date().toLocaleDateString('ms-MY')}\nJumlah Rekod: ${records.length}\n\nData JSON:\n${JSON.stringify(data, null, 2)}`);
+    const subject = encodeURIComponent(`HMA Backup ${new Date().toISOString().split('T')[0]}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+    closeModal('cloudModal');
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(id) {
+    if (id === 'previewModal') {
+        openPreviewModal();
+        return;
+    }
+    const el2 = document.getElementById(id);
+    if (el2) el2.classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('active');
+    });
+});
+
+function openPreviewModal() {
+    updatePreview();
+    const clone = document.getElementById('receiptArea').cloneNode(true);
+    clone.style.cssText = 'background:white;padding:20px;border-radius:8px;max-width:600px;margin:0 auto;';
+    document.getElementById('previewArea').innerHTML = '';
+    document.getElementById('previewArea').appendChild(clone);
+    document.getElementById('previewModal').classList.add('active');
+}
+
+// ============================================================
+// MOBILE NAVIGATION
+// ============================================================
+function switchMobileView(view) {
+    const mc = document.getElementById('mainContent');
+    mc.className = `main-content mobile-show-${view}`;
+
+    ['Form', 'Preview', 'DB'].forEach(v => {
+        document.getElementById(`nav${v}`).classList.remove('active');
+    });
+
+    const map = { form: 'Form', preview: 'Preview', db: 'DB' };
+    if (map[view]) document.getElementById(`nav${map[view]}`).classList.add('active');
+}
+
+// ============================================================
+// PWA
+// ============================================================
+if ('serviceWorker' in navigator) {
+    // Inline SW registration - won't work standalone but sets up infrastructure
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').classList.add('show');
+});
+
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+            deferredPrompt = null;
+            dismissInstall();
+        });
+    }
+}
+
+function dismissInstall() {
+    document.getElementById('installBanner').classList.remove('show');
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function toast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+    t.innerHTML = `<span>${icons[type] || ''}</span><span>${msg}</span>`;
+    container.appendChild(t);
+
+    setTimeout(() => {
+        t.style.animation = 'toastOut 0.3s ease forwards';
+        setTimeout(() => t.remove(), 300);
+    }, 3000);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function el(id) { return document.getElementById(id); }
+function get(id) { const e = el(id); return e ? e.value : ''; }
+function set(id, val) { const e = el(id); if (e && val !== undefined && val !== null) e.value = val; }
+
+// ============================================================
+// MODAL PRINT / PDF HELPERS
+// ============================================================
+function printFromModal() {
+    // Get data from previewArea dataset if record preview, else use form
+    const idx = document.getElementById('previewArea').dataset.idx;
+    let data;
+    if (idx !== undefined && idx !== '' && records[parseInt(idx)]) {
+        const r = records[parseInt(idx)];
+        data = {
+            receiptNo: r.receiptNo, tarikh: fmtDate(r.tarikh), kategori: r.kategori,
+            nama: r.nama, alamat: r.alamat, item: r.item, jumlah: r.jumlah,
+            bakiTerdahulu: r.bakiTerdahulu, bakiTerkini: r.bakiTerkini,
+            paymentMethod: r.paymentMethod, butiran: r.butiran
+        };
+    } else {
+        data = getCurrentReceiptData();
+    }
+    printReceipt(data);
+}
+
+function exportFromModal() {
+    const idx = document.getElementById('previewArea').dataset.idx;
+    if (idx !== undefined && idx !== '' && records[parseInt(idx)]) {
+        exportToPDF(parseInt(idx));
+    } else {
+        exportToPDF();
+    }
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        simpanDanCetak();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        printReceipt(getCurrentReceiptData());
+    }
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    }
+});
+</script>
+
+<!-- Inline PWA Manifest via JS -->
+<script>
+// Create manifest programmatically for self-contained PWA
+const manifest = {
+    name: "Sistem Resit HMA",
+    short_name: "HMA Resit",
+    description: "Sistem pengurusan resit Hairi Mustafa & Associates",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#f0f2f5",
+    theme_color: "#2c3e50",
+    orientation: "portrait-primary",
+    icons: [
+        { src: "https://arleta.site/interactivelink/2510/logo.png", sizes: "192x192", type: "image/png" },
+        { src: "https://arleta.site/interactivelink/2510/logo.png", sizes: "512x512", type: "image/png" }
+    ]
+};
+const blob = new Blob([JSON.stringify(manifest)], { 
